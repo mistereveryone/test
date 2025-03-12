@@ -71,27 +71,8 @@ function Clear-ExistingLogs {
         Write-Host "Erreur lors du nettoyage des journaux : $_" -ForegroundColor Red
     }
 }
-
-# Menu principal
-Write-Host "Choisissez une option pour désactiver ou limiter la journalisation :" -ForegroundColor Cyan
-Write-Host "1. Désactiver la journalisation de Microsoft Defender"
-Write-Host "2. Désactiver la journalisation des événements Windows"
-Write-Host "3. Désactiver la journalisation PowerShell"
-Write-Host "4. Nettoyer les journaux existants"
-Write-Host "5. Tout désactiver et nettoyer"
-
-$choice = Read-Host "Entrez votre choix (1-5)"
-
-switch ($choice) {
-    1 { Disable-DefenderLogging }
-    2 { Disable-EventViewerLogging }
-    3 { Disable-PowerShellLogging }
-    4 { Clear-ExistingLogs }
-    5 {
         Disable-DefenderLogging
         Disable-EventViewerLogging
         Disable-PowerShellLogging
         Clear-ExistingLogs
-    }
-    default { Write-Host "Choix invalide. Veuillez réessayer." -ForegroundColor Red }
-}
+
