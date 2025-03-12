@@ -6,59 +6,7 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     exit
 }
 
-# 1. Désactiver la journalisation de Microsoft Defender via le Registre
-function Disable-DefenderLoggingInRegistry {
-    Write-Host "Désactivation de la journalisation de Microsoft Defender via le Registre..." -ForegroundColor Yellow
-    $regPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\"
-    try {
-        if (-not (Test-Path $regPath)) {
-            Write-Host "Création du chemin : $regPath" -ForegroundColor Yellow
-            New-Item -Path $regPath -Force | Out-Null
-        }
-        Set-ItemProperty -Path $regPath -Name "DisableLogging" -Value 1 -Type DWord
-        Write-Host "Journalisation de Microsoft Defender désactivée dans le Registre." -ForegroundColor Green
-    } catch {
-        Write-Host "Erreur lors de la désactivation de la journalisation dans le Registre : $_" -ForegroundColor Red
-    }
-}
-
-# 2. Suppression des fichiers journaux de Microsoft Defender
-function Remove-DefenderLogFiles {
-    Write-Host "Suppression des fichiers journaux de Microsoft Defender..." -ForegroundColor Yellow
-    $logFolder = "C:\ProgramData\Microsoft\Windows Defender\Support\"
-    try {
-        if (Test-Path $logFolder) {
-            Get-ChildItem -Path $logFolder -Filter *.log | ForEach-Object {
-                Write-Host "Suppression du fichier : $($_.FullName)" -ForegroundColor Yellow
-                Remove-Item -Path $_.FullName -Force
-            }
-            Write-Host "Fichiers journaux supprimés avec succès." -ForegroundColor Green
-        } else {
-            Write-Host "Le dossier de journaux n'existe pas : $logFolder" -ForegroundColor Red
-        }
-    } catch {
-        Write-Host "Erreur lors de la suppression des fichiers journaux : $_" -ForegroundColor Red
-    }
-}
-
-# 3. Effacement des journaux d'événements Microsoft Defender dans Event Viewer
-function Clear-DefenderEventLogs {
-    Write-Host "Effacement des journaux d'événements Microsoft Defender dans Event Viewer..." -ForegroundColor Yellow
-    try {
-        $defenderLog = "Microsoft-Windows-Windows Defender/Operational"
-        if ((Get-WinEvent -ListLog $defenderLog -ErrorAction SilentlyContinue)) {
-            Write-Host "Effacement du journal : $defenderLog" -ForegroundColor Yellow
-            wevtutil cl $defenderLog
-            Write-Host "Journal d'événements Microsoft Defender effacé." -ForegroundColor Green
-        } else {
-            Write-Host "Le journal d'événements Microsoft Defender n'existe pas." -ForegroundColor Red
-        }
-    } catch {
-        Write-Host "Erreur lors de l'effacement des journaux d'événements : $_" -ForegroundColor Red
-    }
-}
-
-# 4. Désactiver la journalisation de Microsoft Defender (fonction originale)
+# 1. Désactiver la journalisation de Microsoft Defender
 function Disable-DefenderLogging {
     Write-Host "Désactivation de la journalisation de Microsoft Defender..." -ForegroundColor Yellow
     $regPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender"
@@ -74,7 +22,7 @@ function Disable-DefenderLogging {
     }
 }
 
-# 5. Désactiver la journalisation des événements Windows (Event Viewer)
+# 2. Désactiver la journalisation des événements Windows (Event Viewer)
 function Disable-EventViewerLogging {
     Write-Host "Désactivation de la journalisation des événements Windows..." -ForegroundColor Yellow
     $logs = @("Application", "Security", "System")
@@ -94,7 +42,7 @@ function Disable-EventViewerLogging {
     Write-Host "Journalisation des événements Windows désactivée." -ForegroundColor Green
 }
 
-# 6. Désactiver la journalisation PowerShell
+# 3. Désactiver la journalisation PowerShell
 function Disable-PowerShellLogging {
     Write-Host "Désactivation de la journalisation PowerShell..." -ForegroundColor Yellow
     $regPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ModuleLogging"
@@ -110,7 +58,7 @@ function Disable-PowerShellLogging {
     }
 }
 
-# 7. Nettoyer les journaux existants
+# 4. Nettoyer les journaux existants
 function Clear-ExistingLogs {
     Write-Host "Nettoyage des journaux existants..." -ForegroundColor Yellow
     try {
@@ -124,11 +72,26 @@ function Clear-ExistingLogs {
     }
 }
 
-# Exécution des fonctions
-Disable-DefenderLoggingInRegistry
-Remove-DefenderLogFiles
-Clear-DefenderEventLogs
-Disable-DefenderLogging
-Disable-EventViewerLogging
-Disable-PowerShellLogging
-Clear-ExistingLogs
+# Menu principal
+Write-Host "Choisissez une option pour désactiver ou limiter la journalisation :" -ForegroundColor Cyan
+Write-Host "1. Désactiver la journalisation de Microsoft Defender"
+Write-Host "2. Désactiver la journalisation des événements Windows"
+Write-Host "3. Désactiver la journalisation PowerShell"
+Write-Host "4. Nettoyer les journaux existants"
+Write-Host "5. Tout désactiver et nettoyer"
+
+$choice = Read-Host "Entrez votre choix (1-5)"
+
+switch ($choice) {
+    1 { Disable-DefenderLogging }
+    2 { Disable-EventViewerLogging }
+    3 { Disable-PowerShellLogging }
+    4 { Clear-ExistingLogs }
+    5 {
+        Disable-DefenderLogging
+        Disable-EventViewerLogging
+        Disable-PowerShellLogging
+        Clear-ExistingLogs
+    }
+    default { Write-Host "Choix invalide. Veuillez réessayer." -ForegroundColor Red }
+}
