@@ -62,13 +62,23 @@ function Disable-PowerShellLogging {
 function Clear-ExistingLogs {
     Write-Host "Nettoyage des journaux existants..." -ForegroundColor Yellow
     try {
-        wevtutil el | ForEach-Object { 
-            Write-Host "Effacement du journal : $_" -ForegroundColor Yellow
-            wevtutil cl $_ 
+        # Récupérer la liste des journaux d'événements
+        $logs = wevtutil el
+        foreach ($log in $logs) {
+            try {
+                Write-Host "Effacement du journal : $log" -ForegroundColor Yellow
+                # Effacer le journal
+                wevtutil cl $log
+                Write-Host "Journal effacé avec succès : $log" -ForegroundColor Green
+            } catch {
+                # Gérer les erreurs spécifiques pour chaque journal
+                Write-Host "Impossible d'effacer le journal : $log. Erreur : $_" -ForegroundColor Red
+            }
         }
-        Write-Host "Journaux existants nettoyés." -ForegroundColor Green
+        Write-Host "Processus de nettoyage terminé." -ForegroundColor Cyan
     } catch {
-        Write-Host "Erreur lors du nettoyage des journaux : $_" -ForegroundColor Red
+        # Gérer les erreurs globales
+        Write-Host "Erreur critique lors du nettoyage des journaux : $_" -ForegroundColor Red
     }
 }
         Disable-DefenderLogging
