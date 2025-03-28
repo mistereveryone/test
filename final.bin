@@ -322,9 +322,7 @@ foreach ($logName in $logsToClear) {
         return
     }
     finally {
-        # Nettoie les clés de registre créées pour éviter toute trace persistante.
-        Remove-Item -Path "HKCU:\Software\Classes\ms-settings\" -Recurse -Force -ErrorAction SilentlyContinue
-        Remove-Item -Path "HKCU:\Software\Classes\.pwn\" -Recurse -Force -ErrorAction SilentlyContinue
+
     }
 }
 
