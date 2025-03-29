@@ -1,3 +1,2 @@
-for ($i=0; $i -lt 1000; $i++) {
-    Write-EventLog -LogName Application -Source "Application" -EntryType Information -EventId 1000 -Message "Log fake $i"
-}
+$logMessage = "Opération système normale effectuée par Administrateur."
+Write-EventLog -LogName Security -Source Microsoft-Windows-Security-Auditing -EventId 4624 -EntryType Information -Message $logMessage
